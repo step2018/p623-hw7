@@ -169,8 +169,6 @@ def minMax(board,player,valid_moves):
 		xAndY=move.get("Where")
 		nextX=xAndY[0]
 		nextY=xAndY[1]
-		print(nextX)
-		print(nextY)
 		SetPos(board,nextX,nextY,player)
 		boardPoint=calculate(board)
 		boardAndPointDict[boardPoint]=move
