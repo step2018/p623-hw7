@@ -110,6 +110,7 @@ def Pos(board, x, y):
 def SetPos(board, x, y, piece):
 	if x < 1 or 8 < x or y < 1 or 8 < y or piece not in [0,1,2]:
 		return False
+        logging.info('SetPos(board, %d, %d, %d) board contents: %s' % (x,y,piece,board))
 	board[y-1][x-1] = piece
 
 # Debug function to pretty print the array representation of board.
