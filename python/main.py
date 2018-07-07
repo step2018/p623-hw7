@@ -6,6 +6,7 @@ import json
 import logging
 import random
 import webapp2
+import time
 
 # Reads json description of the board and provides simple interface.
 class Game:
@@ -124,6 +125,62 @@ def PrettyMove(move):
 	m = move["Where"]
 	return '%s%d' % (chr(ord('A') + m[0] - 1), m[1])
 
+#------------------written by Mamiko Ino-----------------------
+def calculate(board):
+	pointOfBlack=0
+	pointOfWhite=0
+	boardPoint=pointOfBlack+pointOfWhite
+	for indexForX in range(2,8):
+		for indexForY in range(2,8):
+			if board[indexForX-1][indexForY-1]==1:
+				pointOfBlack+=1
+			elif board[indexForX-1][indexForY-1]==2:
+				pointOfWhite-=1
+
+	for indexForX in [1,8]:
+		for indexForY in range(2,8):
+			if board[indexForX-1][indexForY-1]==1:
+					pointOfBlack+=3
+			elif board[indexForX-1][indexForY-1]==2:
+					pointOfWhite-=3
+		
+	for indexForY in [1,8]:
+		for indexForX in range(2,8):
+			if board[indexForX-1][indexForY-1]==1:
+					pointOfBlack+=3
+			elif board[indexForX-1][indexForY-1]==2:
+					pointOfWhite-=3
+		
+	for indexForX in [1,8]:
+		for indexForY in [1,8]:
+			if board[indexForX-1][indexForY-1]==1:
+					pointOfBlack+=6
+			elif board[indexForX-1][indexForY-1]==2:
+					pointOfWhite-=6
+	return boardPoint
+
+		
+
+def minMax(board,player,valid_moves):
+	boardAndPointDict={}
+	listForPoint=[]
+	depth=1
+	for move in valid_moves:
+		xAndY=move.get("Where")
+		nextX=xAndY[0]
+		nextY=xAndY[1]
+		print(nextX)
+		print(nextY)
+		SetPos(board,nextX,nextY,player)
+		boardPoint=calculate(board)
+		boardAndPointDict[boardPoint]=move
+	if piece==1:
+		return boardAndPointDict[max(boardPoint)]
+	elif piece==2:
+		return boardAndPointDict[min(boardPoint)]
+#-----------------------written by Mamiko Ino--------------
+
+
 class MainHandler(webapp2.RequestHandler):
     # Handling GET request, just for debugging purposes.
     # If you open this handler directly, it will show you the
@@ -143,6 +200,7 @@ Paste JSON here:<p/><textarea name=json cols=80 rows=24></textarea>
           g = Game(self.request.get('json'))
           self.pickMove(g)
 
+	
     def post(self):
     	# Reads JSON representation of the board and store as the object.
     	g = Game(self.request.body)
@@ -161,8 +219,17 @@ Paste JSON here:<p/><textarea name=json cols=80 rows=24></textarea>
                 # TO STEP STUDENTS:
                 # You'll probably want to change how this works, to do something
                 # more clever than just picking a random move.
-	    	move = random.choice(valid_moves)
+	    	move = minMax(g._board,g.Next(),valid_moves)
     		self.response.write(PrettyMove(move))
+	
+	
+	#def keepTime(g,board,piece):
+		#start=time.time()
+		#while True:
+			#if time.time()-start>=15:
+				#break
+
+
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
